@@ -3,7 +3,7 @@ Library Management System
 Welcome to the Library Management System! This application provides an efficient way to manage books, users, and authors in a library setting. The system has been designed with a command-line interface (CLI) to ensure a user-friendly experience.
 
 # Features
-# Book Operations:
+Book Operations:
 
 Add a new book
 Borrow a book
@@ -52,19 +52,18 @@ Main Menu:
 You can select options by entering the corresponding number. Follow the prompts to interact with the system.
 
 # Example of Book Operations:
-
-# To add a new book, select Book Operations and then choose the option to add a book.
-# Input the required information when prompted (title, author, genre, and publication date).
+To add a new book, select Book Operations and then choose the option to add a book.
+Input the required information when prompted (title, author, genre, and publication date).
 
 # Code Structure
-# book.py: Contains the Book class to manage book information and operations.
+book.py: Contains the Book class to manage book information and operations.
 
-# user.py: Contains the User class to manage user information and operations.
+user.py: Contains the User class to manage user information and operations.
 
-# author.py: Contains the Author class to manage author information and operations.
+author.py: Contains the Author class to manage author information and operations.
 
-# main.py: The entry point of the application, handling user interaction through the command-line interface.
+main.py: The entry point of the application, handling user interaction through the command-line interface.
 
-# Contributing:
+Contributing:
 Contributions are welcome! If you have suggestions for improvements or find bugs, please open an issue or submit a pull request.
 
