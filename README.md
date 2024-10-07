@@ -1,25 +1,16 @@
-Library Management System
+# Library Management System
 
 Welcome to the Library Management System! This application provides an efficient way to manage books, users, and authors in a library setting. The system has been designed with a command-line interface (CLI) to ensure a user-friendly experience.
 
 # Features
-Book Operations:
+# Book Operations: 
+Add a new book, Borrow a book, Return a book, Search for a book, Display all books
 
-Add a new book
-Borrow a book
-Return a book
-Search for a book
-Display all books
-User Operations:
+# User Operations: 
+Add a new user, View user details, Display all users,
 
-Add a new user
-View user details
-Display all users
-Author Operations:
-
-Add a new author
-View author details
-Display all authors
+# Author Operations:
+Add a new author, View author details, Display all authors
 
 # Requirements:
 Python 3.6 or higher
@@ -29,8 +20,7 @@ No additional libraries are required
 Follow the steps below to run the application locally:
 
 1. Clone the repository:
-git clone https://github.com/your_username/library_management_system.git
-
+git clone [https://github.com/ksol17/library-management-system-mini-project]
 2. Navigate to the project directory:
 cd library_management_system
 
