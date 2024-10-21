@@ -1,32 +1,70 @@
+from db_connection import create_connection, close_connection
+
 class Book:
-    def __init__(self, title, author, genre, pub_date):
-        self.__title = title
-        self.__author = author
-        self.__genre = genre
-        self.__pub_date = pub_date
-        self.__available = True  # Default availability status
+    def __init__(self, title, author_id, isbn, pub_date, book_id=None, is_available=True):
+        self.book_id = book_id
+        self.title = title
+        self.author_id = author_id
+        self.isbn = isbn
+        self.pub_date = pub_date
+        self.is_available = is_available
 
-    # Getters
-    def get_title(self):
-        return self.__title
+    def save_to_db(self):
+        connection = create_connection()
+        cursor = connection.cursor()
 
-    def get_author(self):
-        return self.__author
+        query = "INSERT INTO Books (title, author_id, isbn, pub_date, is_available) VALUES (%s, %s, %s, %s, %s)"
+        values = (self.title, self. author_id, self.isbn, self.pub_date, self.is_available)
+    
+        cursor.execute(query, values)
+        connection.commit()
 
-    def get_genre(self):
-        return self.__genre
+        print(f"Book '{self.title}' with ISBN '{self.isbn}' added to the database.")
+        close_connection(connection)
 
-    def get_pub_date(self):
-        return self.__pub_date
+    def mark_borrowed(self):
+        connection = create_connection()
+        cursor = connection.cursor()
 
-    def is_available(self):
-        return self.__available
+        query = "UPDATE Books SET is_availabe = %s WHERE isbn = %s"
+        cursor.execute(query, (False, self.isbn))
+        connection.commit()
+        
+        print(f"Book '{self.title}' marked as borrowed.")
+        close_connection(connection)
+    
+    def mark_returned(self):
+        connection = create_connection()
+        cursor = connection.cursor()
 
-    # Setters
-    def set_availability(self, availability):
-        self.__available = availability
+        query = "UPDATE Books SET is_available = %s WHERE isbn = %s"
+        cursor.execute(query, (True, self.isbn))
+        connection.commit()
 
-    def display_book_info(self):
-        availability_status = "Available" if self.__available else "Not Available"
-        return (f"Title: {self.__title}, Author: {self.__author}, Genre: {self.__genre}, "
-                f"Publication Date: {self.__pub_date}, Status: {availability_status}")
+        print(f"Book '{self.title}' marked as returned.")
+        close_connection(connection)
+
+    
+    def search_by_isbn(isbn):
+        connection = create_connection()
+        cursor = connection.cursor()
+        
+        query = "SELECT * FROM Books WHERE isbn = %s"
+        cursor.execute(query, (isbn,))
+        book = cursor.fetchone()
+
+        if book:
+            print(f"Book found: {book}")
+        else:
+            print(f"No book found with ISBN '{isbn}'.")   
+        close_connection(connection)
+
+
+    def display_all_books():
+        connection = create_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM Books")
+        results = cursor.fetchall
+
+        close_connection(connection)

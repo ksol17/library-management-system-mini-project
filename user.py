@@ -1,27 +1,49 @@
+from db_connection import create_connection, close_connection
+
 class User:
-    def __init__(self, name, library_id):
-        self.__name = name
-        self.__library_id = library_id
-        self.__borrowed_books = []
+    def __init__(self, name, library_id, user_id=None):
+        self.user_id = user_id
+        self.name = name
+        self.library_id = library_id
 
-    # Getters
-    def get_name(self):
-        return self.__name
+    def save_to_db(self):
+        connection = create_connection()
+        cursor = connection.cursor()
 
-    def get_library_id(self):
-        return self.__library_id
+        query = "INSERT INTO users (name, library_id) VALUES (%s, %s)"
+        values = (self.name, self.library_id)
 
-    def get_borrowed_books(self):
-        return self.__borrowed_books
+        cursor.execute(query, values)
+        connection.commit()
 
-    # Borrow and return books
-    def borrow_book(self, book_title):
-        self.__borrowed_books.append(book_title)
+        print(f"User '{self.name}' added to the database.")
+        close_connection(connection)
 
-    def return_book(self, book_title):
-        if book_title in self.__borrowed_books:
-            self.__borrowed_books.remove(book_title)
 
-    def display_user_info(self):
-        borrowed_books_str = ", ".join(self.__borrowed_books) if self.__borrowed_books else "No books borrowed"
-        return f"User: {self.__name}, Library ID: {self.__library_id}, Borrowed Books: {borrowed_books_str}"
+    def display_all_users():
+        connection = create_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM users")
+        results = cursor.fetchall()
+
+        for row in results:
+            print(row)
+        
+        close_connection(connection)
+
+
+    def view_user_details(library_id):
+        connection = create_connection()
+        cursor = connection.cursor()
+
+        query = "SELECT * FROM users WHERE library_id = %s"
+        cursor.execute(query, (library_id,))
+        user = cursor.fetchone()
+
+        if user:
+            print(f"User Found: {user}")
+        else:
+            print(f"No user found with library ID '{library_id}'.")
+
+        close_connection(connection)

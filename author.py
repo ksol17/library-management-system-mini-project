@@ -1,14 +1,47 @@
+from db_connection import create_connection, close_connection
+
 class Author:
-    def __init__(self, name, biography):
-        self.__name = name
-        self.__biography = biography
+    def __init__(self, name, biography, author_id=None):
+        self.author_id = author_id
+        self.name = name
+        self.biography = biography
 
-    # Getters
-    def get_name(self):
-        return self.__name
+    def save_to_db(self):
+        connection = create_connection()
+        cursor = connection.cursor()
 
-    def get_biography(self):
-        return self.__biography
+        query = "INSERT INTO authors (name, biography) VALUES (%s, %s)"
+        values = (self.name, self.biography)
 
-    def display_author_info(self):
-        return f"Author: {self.__name}, Biography: {self.__biography}"
+        cursor.execute(query, values)
+        connection.commit()
+
+        print(f"Author '{self.name}' added to the database.")
+        close_connection(connection)
+
+    def display_all_authors():
+        connection = create_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM authors")
+        results = cursor.fetchall()
+
+        for row in results:
+            print(row)
+
+        close_connection(connection)
+
+    def view_author_details(author_id):
+        connection = create_connection()
+        cursor = connection.cursor()
+
+        query = "SELECT * FROM authors WHERE author_id = %s"
+        cursor.execute(query, (author_id,))
+        author = cursor.fetchone()
+
+        if author:
+            print(f"Author Found: {author}")
+        else:
+            print(f"No author found with ID '{author_id}'.")
+
+        close_connection(connection)
