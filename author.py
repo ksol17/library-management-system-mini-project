@@ -1,3 +1,4 @@
+import mysql
 from db_connection import create_connection, close_connection
 
 class Author:
@@ -45,3 +46,22 @@ class Author:
             print(f"No author found with ID '{author_id}'.")
 
         close_connection(connection)
+
+  
+    def search_by_id(author_id):
+        connection = create_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT author_id, name, biography FROM authors WHERE author_id = %s", (author_id,))
+            result = cursor.fetchone()
+            if result:
+                author_id, name, biography = result
+                return Author(name, biography)
+            else:
+                print(f"No author found with ID: {author_id}")
+                return None
+        except mysql.connector.Error as err:
+            print(f"Error fetching author by ID: {err}")
+            return None
+        finally:
+            close_connection(connection)

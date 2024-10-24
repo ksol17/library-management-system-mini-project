@@ -1,3 +1,4 @@
+import mysql
 from db_connection import create_connection, close_connection
 
 class User:
@@ -47,3 +48,23 @@ class User:
             print(f"No user found with library ID '{library_id}'.")
 
         close_connection(connection)
+
+    
+    def search_by_library_id(library_id):
+        connection = create_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT library_id, name FROM users WHERE library_id = %s", (library_id,))
+            result = cursor.fetchone()
+            if result:
+                library_id, name = result
+                return User(name, library_id)
+            else:
+                print(f"No user found with Library ID: {library_id}")
+                return None
+        except mysql.connector.Error as err:
+            print(f"Error fetching user by Library ID: {err}")
+            return None
+        finally:
+            close_connection(connection)
+
