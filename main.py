@@ -1,7 +1,9 @@
 import re
-from book import Book
+from book import Book, add_book, search_by_isbn, display_all_books, update_availability
 from user import User
-from author import Author
+from author import Author 
+from borrowed_books import borrow_book, return_book, view_borrowed_books
+
 
 def main_menu():
     while True:
@@ -20,10 +22,12 @@ def main_menu():
         elif choice == "3":
             author_operations()
         elif choice == "4":
-            print("Exiting the system. Goodbye!")
+            print("Exiting Library Management System. Goodbye!")
             break
         else:
             print("Invalid choice, please try again.")
+
+
 # Book Operations Menu
 def book_operations():
         while True:
@@ -39,38 +43,48 @@ def book_operations():
             try: 
 
                 if choice == "1":
-                    isbn = input("Enter ISBN: ")
                     title = input("Enter book title: ")
-                    author = input("Enter author: ")
-                    genre = input("Enter genre: ")
-                    pub_date = input("Enter publication date (YYYY-MM-DD): ")
-                    # Validate date format
-                    if not re.match(r"\d{4}-\d{2}-\d{2}", pub_date):
+                    author_id = input("Enter author_id: ")
+                    isbn = input("Enter ISBN: ")
+                    publication_date = input("Enter publication date (YYYY-MM-DD): ")
+                        # Validate date format
+                    if not re.match(r"\d{4}-\d{2}-\d{2}", publication_date):
                         raise ValueError("Invalid date format. Use YYYY-MM-DD.")
-                
-                    book = Book(isbn, title, author, genre, pub_date)
-                    book.save_to_db()
+
+                    # Create and save the book
+                    new_book = Book(None, title, author_id, isbn, publication_date)
+                    new_book.save_to_db()
                     print("Book added successfully.")
+
                 elif choice == "2":
                     isbn = input("Enter ISBN of the book to borrow: ")
-                    Book.search_by_isbn(isbn)
+                    book = search_by_isbn(isbn)
                     if book:
-                        book.mark_borrowed()
+                        update_availability(isbn, False)
+                        print(f"Book '{book.title}' marked as borrowed.")
+                    else:
+                        print("Book not found.")
+
 
                 elif choice == "3":
                     isbn = input("Enter ISBN of the book to return: ")
-                    Book.search_by_isbn(isbn)
+                    book = search_by_isbn(isbn)
                     if book:
-                        book.mark_borrowed()
+                        update_availability(isbn, True)
+                        print(f"Book '{book.title}' marked as available.")
+                    else:
+                        print("Book not found.")
 
                 elif choice == "4":
                     isbn = input("Enter ISBN to search: ")
-                    Book.search_by_isbn(isbn)
+                    book = search_by_isbn(isbn)
                     if book:
-                        print(f"Book Found: {book._title}, Author: {book._author}, Availability: {'Yes' if book.availability else 'No'}")
+                        print(f"Book Found: {book.title}, Author ID: {book.author_id}, Availability: {'Yes' if book.availability else 'No'}")
+                    else:
+                        print("Book not found")
 
                 elif choice == "5":
-                    Book.display_all_books()
+                    display_all_books()
 
                 elif choice == "6":
                     break
@@ -98,25 +112,19 @@ def user_operations():
             if choice == "1":
                 name = input("Enter user name: ")
                 library_id = input("Enter user library ID: ")
-
-                # Validate library ID (example: alphanumeric check)
-                if not re.match(r"^[a-zA-Z0-9]+$", library_id):
-                    raise ValueError("Invalid library ID format. It must be alphanumeric.")
-
                 user = User(name, library_id)
                 user.save_to_db()
-                print(f"User {name} added successfully.") 
+                print(f"User {name} added successfully.")
 
             elif choice == "2":
                 library_id = input("Enter user library ID: ")
-                
-                # Validate library ID format
                 if not re.match(r"^[a-zA-Z0-9]+$", library_id):
-                    raise ValueError("Invalid library ID format.")
-                
-                user = User.search_by_library_id(library_id)
+                    print("Invalid library ID format.")
+                    continue  # Go back to the menu or loop
+
+                user = User.search_by_library_id(library_id)  # This correctly provides the argument
                 if user:
-                    print(f"User Found: {user._name}, Library ID: {user._library_id}")
+                    print(f"User Found: {user.name}, Library ID: {user.library_id}")
                 else:
                     print(f"No user found with Library ID: {library_id}")
 
@@ -152,21 +160,37 @@ def author_operations():
             if choice == "1":
                 name = input("Enter author name: ")
                 biography = input("Enter author biography: ")
-                author = Author(name, biography)
+                # Validate inputs
+                if not name.strip():
+                    print("Author name cannot be empty.")
+                    continue
+                
+                if not biography.strip():
+                    print("Author biography cannot be empty.")
+                    continue
+
+                # Create the author object without an ID, assuming it’s auto-generated
+                author = Author(name=name, biography=biography)
+
+                # Save to the database
                 author.save_to_db()
                 print(f"Author {name} added successfully.")
             
             elif choice == "2":
-                author_id = input("Enter author ID: ")
+                id_input = input("Enter ID: ")
                 # Validate author ID (example: numeric check)
-                if not author_id.isdigit():
+                if not id_input.isdigit():
                     raise ValueError("Invalid author ID format. It must be numeric.")
+                    continue
+                
+                # Convert the ID to an integer
+                author_id = int(id_input)
 
                 author = Author.search_by_id(author_id)
                 if author:
-                    print(f"Author Found: {author._name}, Biography: {author._biography}")
+                    print(f"Author Found: {author.get_name()}, Biography: {author.get_biography()}")
                 else:
-                    print(f"No author found with ID: {author_id}")
+                    print(f"No author found with ID: {id}")
 
 
             elif choice == "3":
